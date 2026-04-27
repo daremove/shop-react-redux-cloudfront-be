@@ -13,7 +13,8 @@
     "cdk:synth": "cdk synth",
     "cdk:deploy": "cdk deploy --require-approval never",
     "cdk:destroy": "cdk destroy --force",
-    "cdk:diff": "cdk diff"
+    "cdk:diff": "cdk diff",
+    "seed:tables": "ts-node scripts/fill-tables.ts"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.161",
@@ -27,6 +28,8 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1037.0",
+    "@aws-sdk/lib-dynamodb": "^3.1037.0",
     "aws-cdk-lib": "^2.248.0",
     "constructs": "^10.5.0"
   }
