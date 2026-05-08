@@ -9,7 +9,7 @@ import { NodejsFunction, NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-node
 const PRODUCTS_TABLE_NAME = "products";
 const STOCKS_TABLE_NAME = "stocks";
 
-export class ShopReactReduxCloudfrontBeStack extends cdk.Stack {
+export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
