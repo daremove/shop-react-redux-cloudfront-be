@@ -4,6 +4,7 @@ import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import * as s3n from "aws-cdk-lib/aws-s3-notifications";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as sqs from "aws-cdk-lib/aws-sqs";
 import * as path from "path";
 import { Construct } from "constructs";
 import {
@@ -13,9 +14,15 @@ import {
 
 const UPLOADED_FOLDER = "uploaded";
 
+export interface ImportServiceStackProps extends cdk.StackProps {
+  catalogItemsQueue: sqs.IQueue;
+}
+
 export class ImportServiceStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: ImportServiceStackProps) {
     super(scope, id, props);
+
+    const { catalogItemsQueue } = props;
 
     const importBucket = new s3.Bucket(this, "ImportBucket", {
       bucketName: `rs-import-service-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`,
@@ -78,9 +85,15 @@ export class ImportServiceStack extends cdk.Stack {
         "importFileParser.ts"
       ),
       functionName: "importFileParser",
+      environment: {
+        ...commonLambdaProps.environment,
+        CATALOG_ITEMS_QUEUE_URL: catalogItemsQueue.queueUrl,
+      },
     });
 
     importBucket.grantRead(importFileParser, `${UPLOADED_FOLDER}/*`);
+    catalogItemsQueue.grantSendMessages(importFileParser);
+
     importBucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
       new s3n.LambdaDestination(importFileParser),
