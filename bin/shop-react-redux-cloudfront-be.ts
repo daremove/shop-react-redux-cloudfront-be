@@ -9,5 +9,8 @@ const env = {
   region: "eu-west-1",
 };
 
-new ProductServiceStack(app, "ProductServiceStack", { env });
-new ImportServiceStack(app, "ImportServiceStack", { env });
+const productServiceStack = new ProductServiceStack(app, "ProductServiceStack", { env });
+new ImportServiceStack(app, "ImportServiceStack", {
+  env,
+  catalogItemsQueue: productServiceStack.catalogItemsQueue,
+});
